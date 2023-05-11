@@ -15,7 +15,16 @@ inline SynchronousBlockingQueue<T>::SynchronousBlockingQueue(size_t maxSize)
 template<typename T>
 void SynchronousBlockingQueue<T>::push(const T& newElement)
 {
-	//TODO
+	std::unique_lock<std::mutex> lock(mQueueMutex);
+	while(mData.size() == mMaxSize) 
+	{
+		mConditionVariable.wait(lock);
+	}
+ 
+	mData.push(newElement);
+	std::cout << "Pushed value " << newElement << std::endl;
+	
+	mConditionVariable.notify_all()
 }
 
 template<typename T>
